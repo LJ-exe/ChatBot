@@ -11,7 +11,7 @@ Application web Django d'un chatbot spécialisé en informatique (IT), avec :
 
 
 
-1. 🧠 **Mémoire conversationnelle** — Le bot se souvient des 5 derniers échanges et peut comprendre des questions de suivi (« Et c'est différent d'IPv6 ? »).
+1. 🧠 **Mémoire conversationnelle** — Le bot se souvient des 5 derniers échanges et peut comprendre des questions de suivi .
 2. 🛡️ **Rate limiting** — Maximum 30 messages/heure par utilisateur (anti-abus, protège votre budget OpenAI).
 3. 👍👎 **Système de feedback** — Les utilisateurs notent chaque réponse. Les admins voient les réponses ChatGPT mal notées et peuvent les **convertir en FAQ d'un clic**.
 4. 💡 **Suggestions de questions rapides** — Les nouveaux utilisateurs voient 4 questions cliquables basées sur les FAQ les plus populaires.
