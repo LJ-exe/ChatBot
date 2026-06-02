@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Toutes les conversations{% endblock %}
+
+{% block content %}
+<h2 class="mb-3"><i class="bi bi-chat-dots"></i> Toutes les conversations</h2>
+
+<form method="get" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-5">
+            <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Rechercher (question, réponse, utilisateur)...">
+        </div>
+        <div class="col-md-3">
+            <select name="source" class="form-select">
+                <option value="">-- Toutes les sources --</option>
+                <option value="FAQ" {% if source == 'FAQ' %}selected{% endif %}>FAQ</option>
+                <option value="OPENAI" {% if source == 'OPENAI' %}selected{% endif %}>ChatGPT</option>
+                <option value="ERROR" {% if source == 'ERROR' %}selected{% endif %}>Erreur</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="feedback" class="form-select">
+                <option value="">-- Feedback --</option>
+                <option value="positive" {% if feedback == 'positive' %}selected{% endif %}>👍 Positif</option>
+                <option value="negative" {% if feedback == 'negative' %}selected{% endif %}>👎 Négatif</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100"><i class="bi bi-funnel"></i> Filtrer</button>
+        </div>
+    </div>
+</form>
+
+{% if page_obj.object_list %}
+    {% for msg in page_obj %}
+        <div class="card mb-2 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center py-2">
+                <span>
+                    <i class="bi bi-person-circle"></i>
+                    <a href="{% url 'chat:admin_user_history' msg.user.pk %}">{{ msg.user.username }}</a>
+                    <small class="text-muted ms-2">{{ msg.date|date:"d/m/Y H:i" }}</small>
+                </span>
+                <span>
+                    <span class="badge bg-{% if msg.source == 'FAQ' %}info{% elif msg.source == 'OPENAI' %}success{% else %}danger{% endif %}">
+                        {{ msg.get_source_display }}
+                    </span>
+                    {% if msg.feedback %}
+                        {% if msg.feedback.rating == 1 %}
+                            <span class="badge bg-success"><i class="bi bi-hand-thumbs-up-fill"></i></span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-hand-thumbs-down-fill"></i></span>
+                            {% if msg.source == 'OPENAI' %}
+                                <a href="{% url 'chat:admin_faq_create' %}?from_message={{ msg.id }}" class="btn btn-sm btn-warning ms-1" title="Convertir en FAQ">
+                                    <i class="bi bi-plus-circle"></i> FAQ
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="card-body py-2">
+                <p class="mb-1"><strong>Q :</strong> {{ msg.question|linebreaksbr }}</p>
+                <div class="text-muted">
+                    <strong>R :</strong>
+                    <div class="markdown-content" data-raw="{{ msg.response|truncatechars:500 }}"></div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% include 'partials/pagination.html' %}
+{% else %}
+    <div class="alert alert-info">Aucune conversation trouvée.</div>
+{% endif %}
+{% endblock %}

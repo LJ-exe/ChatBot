@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Mon historique{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-clock-history"></i> Mon historique de conversations</h2>
+    <a href="{% url 'chat:dashboard' %}" class="btn btn-primary">
+        <i class="bi bi-chat"></i> Retour au chat
+    </a>
+</div>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Rechercher dans mes conversations...">
+        <button class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+    </div>
+</form>
+
+{% if page_obj.object_list %}
+    {% for msg in page_obj %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <small class="text-muted"><i class="bi bi-calendar"></i> {{ msg.date|date:"d/m/Y H:i" }}</small>
+                <span>
+                    <span class="badge bg-{% if msg.source == 'FAQ' %}info{% elif msg.source == 'OPENAI' %}success{% else %}danger{% endif %}">
+                        {{ msg.get_source_display }}
+                    </span>
+                    {% if msg.feedback %}
+                        {% if msg.feedback.rating == 1 %}
+                            <span class="badge bg-success"><i class="bi bi-hand-thumbs-up-fill"></i></span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-hand-thumbs-down-fill"></i></span>
+                        {% endif %}
+                    {% endif %}
+                    <form method="post" action="{% url 'chat:delete_message' msg.pk %}" class="d-inline"
+                          onsubmit="return confirm('Supprimer ce message ?')">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                    </form>
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong><i class="bi bi-person"></i> Vous :</strong>
+                    <div class="ms-3">{{ msg.question|linebreaksbr }}</div>
+                </div>
+                <div>
+                    <strong><i class="bi bi-robot"></i> Bot :</strong>
+                    <div class="ms-3 markdown-content" data-raw="{{ msg.response }}"></div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% include 'partials/pagination.html' with page_obj=page_obj %}
+{% else %}
+    <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle"></i> Aucune conversation pour le moment.
+        <a href="{% url 'chat:dashboard' %}">Commencer à discuter</a>.
+    </div>
+{% endif %}
+{% endblock %}

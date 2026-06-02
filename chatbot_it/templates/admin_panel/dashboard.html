@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Tableau de bord admin{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-speedometer2"></i> Tableau de bord administrateur</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary shadow-sm h-100">
+            <div class="card-body">
+                <h6><i class="bi bi-people"></i> Utilisateurs</h6>
+                <h2 class="mb-0">{{ stats.total_users }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning shadow-sm h-100">
+            <div class="card-body">
+                <h6><i class="bi bi-shield-lock"></i> Admins</h6>
+                <h2 class="mb-0">{{ stats.total_admins }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success shadow-sm h-100">
+            <div class="card-body">
+                <h6><i class="bi bi-chat-dots"></i> Messages</h6>
+                <h2 class="mb-0">{{ stats.total_messages }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-info shadow-sm h-100">
+            <div class="card-body">
+                <h6><i class="bi bi-book"></i> FAQs ({{ stats.active_faqs }} actives)</h6>
+                <h2 class="mb-0">{{ stats.total_faqs }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Sources des réponses</h6>
+                <p class="mb-1"><i class="bi bi-book text-info"></i> Depuis la FAQ : <strong>{{ stats.messages_from_faq }}</strong></p>
+                <p class="mb-0"><i class="bi bi-stars text-success"></i> Depuis ChatGPT : <strong>{{ stats.messages_from_ai }}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Satisfaction utilisateurs</h6>
+                <p class="mb-1"><i class="bi bi-hand-thumbs-up-fill text-success"></i> Positifs : <strong>{{ stats.positive_feedback }}</strong></p>
+                <p class="mb-0"><i class="bi bi-hand-thumbs-down-fill text-danger"></i> Négatifs : <strong>{{ stats.negative_feedback }}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if bad_ai_responses %}
+<div class="card mb-4 border-warning shadow-sm">
+    <div class="card-header bg-warning-subtle">
+        <strong><i class="bi bi-lightbulb"></i> Opportunités : réponses ChatGPT mal notées</strong>
+        <small class="text-muted">— Convertissez-les en FAQ pour améliorer le bot.</small>
+    </div>
+    <div class="list-group list-group-flush">
+        {% for msg in bad_ai_responses %}
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong class="text-truncate" style="max-width: 70%;">❓ {{ msg.question }}</strong>
+                    <a href="{% url 'chat:admin_faq_create' %}?from_message={{ msg.id }}" class="btn btn-sm btn-warning">
+                        <i class="bi bi-plus-circle"></i> En faire une FAQ
+                    </a>
+                </div>
+                <small class="text-muted">par {{ msg.user.username }} le {{ msg.date|date:"d/m H:i" }}</small>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header"><strong><i class="bi bi-chat-square-text"></i> Derniers messages</strong></div>
+            <div class="list-group list-group-flush">
+                {% for msg in recent_messages %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ msg.user.username }}</strong>
+                            <small class="text-muted">{{ msg.date|date:"d/m H:i" }}</small>
+                        </div>
+                        <div class="small text-truncate">Q: {{ msg.question }}</div>
+                        <span class="badge bg-{% if msg.source == 'FAQ' %}info{% elif msg.source == 'OPENAI' %}success{% else %}danger{% endif %}">
+                            {{ msg.get_source_display }}
+                        </span>
+                    </div>
+                {% empty %}
+                    <div class="list-group-item text-muted text-center">Aucun message.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header"><strong><i class="bi bi-trophy"></i> Utilisateurs les plus actifs</strong></div>
+            <div class="list-group list-group-flush">
+                {% for u in top_users %}
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span><i class="bi bi-person"></i> {{ u.username }}</span>
+                        <span class="badge bg-primary rounded-pill">{{ u.msg_count }} msg</span>
+                    </div>
+                {% empty %}
+                    <div class="list-group-item text-muted text-center">Aucun.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Actions rapides</h6>
+                <a href="{% url 'chat:admin_faq_create' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus-circle"></i> Ajouter une FAQ</a>
+                <a href="{% url 'chat:admin_users_list' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-people"></i> Utilisateurs</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% block title %}Chat - Chatbot IT{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="card shadow chat-card">
+            <div class="card-header bg-primary text-white d-flex align-items-center">
+                <i class="bi bi-robot fs-4 me-2"></i>
+                <div>
+                    <h5 class="mb-0">Assistant IT</h5>
+                    <small>Posez-moi vos questions sur l'informatique</small>
+                </div>
+                <span class="ms-auto badge bg-success"><i class="bi bi-circle-fill"></i> En ligne</span>
+            </div>
+
+            <div id="chat-messages" class="card-body chat-body">
+                <!-- Message de bienvenue + suggestions -->
+                <div class="chat-msg bot">
+                    <div class="msg-bubble bot">
+                        <strong>👋 Bonjour {{ user.full_name }} !</strong><br>
+                        Je suis votre assistant IT. Je consulte ma base de FAQ et, si besoin, j'utilise
+                        ChatGPT. Je garde aussi en mémoire notre conversation récente pour mieux vous
+                        comprendre.
+                    </div>
+                </div>
+
+                {% if suggestions and not recent_messages %}
+                    <div class="suggestions-block">
+                        <small class="text-muted d-block mb-2"><i class="bi bi-lightbulb"></i> Quelques idées pour commencer :</small>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for s in suggestions %}
+                                <button type="button" class="btn btn-sm btn-outline-primary suggestion-btn">{{ s }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Messages récents de l'historique -->
+                {% for msg in recent_messages %}
+                    <div class="chat-msg user">
+                        <div class="msg-bubble user">{{ msg.question|linebreaksbr }}</div>
+                        <small class="text-muted msg-time">{{ msg.date|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <div class="chat-msg bot" data-message-id="{{ msg.id }}">
+                        <div class="msg-bubble bot">
+                            <div class="markdown-content" data-raw="{{ msg.response }}"></div>
+                        </div>
+                        <div class="msg-time d-flex align-items-center gap-2">
+                            <small class="text-muted"><i class="bi bi-tag"></i> {{ msg.get_source_display }}</small>
+                            <div class="feedback-buttons" data-message-id="{{ msg.id }}">
+                                {% with fb=msg.feedback %}
+                                <button class="btn btn-sm btn-link p-0 feedback-btn {% if fb.rating == 1 %}active{% endif %}" data-rating="1" title="Utile">
+                                    <i class="bi {% if fb.rating == 1 %}bi-hand-thumbs-up-fill text-success{% else %}bi-hand-thumbs-up{% endif %}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-link p-0 feedback-btn {% if fb.rating == -1 %}active{% endif %}" data-rating="-1" title="Pas utile">
+                                    <i class="bi {% if fb.rating == -1 %}bi-hand-thumbs-down-fill text-danger{% else %}bi-hand-thumbs-down{% endif %}"></i>
+                                </button>
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="card-footer">
+                <form id="chat-form" class="d-flex gap-2">
+                    {% csrf_token %}
+                    {{ form.question }}
+                    <button type="submit" id="send-btn" class="btn btn-primary">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </form>
+                <div id="typing-indicator" class="text-muted small mt-2" style="display:none;">
+                    <i class="bi bi-three-dots"></i> Le bot réfléchit...
+                </div>
+                <div class="text-muted small mt-1">
+                    <i class="bi bi-info-circle"></i> Limite : 30 messages/heure
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('chat-input');
+    const messagesDiv = document.getElementById('chat-messages');
+    const typingIndicator = document.getElementById('typing-indicator');
+    const sendBtn = document.getElementById('send-btn');
+    const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    function scrollDown() { messagesDiv.scrollTop = messagesDiv.scrollHeight; }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function addUserMessage(text) {
+        const html = `
+            <div class="chat-msg user">
+                <div class="msg-bubble user">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
+                <small class="text-muted msg-time">Maintenant</small>
+            </div>`;
+        messagesDiv.insertAdjacentHTML('beforeend', html);
+        scrollDown();
+    }
+
+    function addBotMessage(text, sourceLabel, sourceCode, messageId) {
+        const icon = sourceCode === 'FAQ' ? 'bi-book' : sourceCode === 'OPENAI' ? 'bi-stars' : 'bi-exclamation-triangle';
+        const rendered = window.renderMarkdown(text);
+        const feedbackHtml = messageId ? `
+            <div class="feedback-buttons" data-message-id="${messageId}">
+                <button class="btn btn-sm btn-link p-0 feedback-btn" data-rating="1" title="Utile">
+                    <i class="bi bi-hand-thumbs-up"></i>
+                </button>
+                <button class="btn btn-sm btn-link p-0 feedback-btn" data-rating="-1" title="Pas utile">
+                    <i class="bi bi-hand-thumbs-down"></i>
+                </button>
+            </div>` : '';
+        const html = `
+            <div class="chat-msg bot" data-message-id="${messageId || ''}">
+                <div class="msg-bubble bot"><div class="markdown-content">${rendered}</div></div>
+                <div class="msg-time d-flex align-items-center gap-2">
+                    <small class="text-muted"><i class="bi ${icon}"></i> ${sourceLabel}</small>
+                    ${feedbackHtml}
+                </div>
+            </div>`;
+        messagesDiv.insertAdjacentHTML('beforeend', html);
+        const lastBot = messagesDiv.querySelector('.chat-msg.bot:last-child .markdown-content');
+        if (lastBot) window.highlightCode(lastBot);
+        scrollDown();
+    }
+
+    // Envoi du formulaire
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const question = input.value.trim();
+        if (!question) return;
+
+        addUserMessage(question);
+        input.value = '';
+        sendBtn.disabled = true;
+        typingIndicator.style.display = 'block';
+        scrollDown();
+
+        try {
+            const formData = new FormData();
+            formData.append('question', question);
+            formData.append('csrfmiddlewaretoken', csrf);
+            const res = await fetch("{% url 'chat:send_message' %}", {
+                method: 'POST', body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            const data = await res.json();
+            if (data.success) {
+                addBotMessage(data.response, data.source, data.source_code, data.message_id);
+            } else {
+                addBotMessage("⚠️ " + (data.error || 'Erreur inconnue'), 'Erreur', 'ERROR', null);
+            }
+        } catch (err) {
+            addBotMessage("⚠️ Erreur réseau : " + err.message, 'Erreur', 'ERROR', null);
+        } finally {
+            typingIndicator.style.display = 'none';
+            sendBtn.disabled = false;
+            input.focus();
+        }
+    });
+
+    // Entrée pour envoyer
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            form.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    // Suggestions cliquables
+    document.querySelectorAll('.suggestion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            input.value = btn.textContent.trim();
+            form.dispatchEvent(new Event('submit'));
+            // Cacher les suggestions après usage
+            const block = btn.closest('.suggestions-block');
+            if (block) block.style.display = 'none';
+        });
+    });
+
+    // Feedback (délégation d'événements pour les messages dynamiques)
+    messagesDiv.addEventListener('click', async function(e) {
+        const btn = e.target.closest('.feedback-btn');
+        if (!btn) return;
+        const container = btn.closest('.feedback-buttons');
+        const messageId = container.dataset.messageId;
+        const rating = btn.dataset.rating;
+        if (!messageId) return;
+
+        try {
+            const fd = new FormData();
+            fd.append('rating', rating);
+            fd.append('csrfmiddlewaretoken', csrf);
+            const res = await fetch(`/chat/feedback/${messageId}/`, {
+                method: 'POST', body: fd,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            const data = await res.json();
+            if (data.success) {
+                // Mettre à jour visuellement
+                container.querySelectorAll('.feedback-btn').forEach(b => {
+                    const r = b.dataset.rating;
+                    const icon = b.querySelector('i');
+                    if (r === rating) {
+                        if (rating === '1') {
+                            icon.className = 'bi bi-hand-thumbs-up-fill text-success';
+                        } else {
+                            icon.className = 'bi bi-hand-thumbs-down-fill text-danger';
+                        }
+                    } else {
+                        icon.className = r === '1' ? 'bi bi-hand-thumbs-up' : 'bi bi-hand-thumbs-down';
+                    }
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    scrollDown();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer {{ user_obj.username }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-body p-4">
+                <h3 class="text-danger"><i class="bi bi-exclamation-triangle"></i> Confirmer la suppression</h3>
+                <hr>
+                <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{{ user_obj.username }}</strong> ({{ user_obj.full_name }}) ?</p>
+                <p class="text-muted small">Cette action supprimera également tous ses messages et son historique. Elle est irréversible.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Oui, supprimer
+                    </button>
+                    <a href="{% url 'chat:admin_users_list' %}" class="btn btn-outline-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

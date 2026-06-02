@@ -1,0 +1,205 @@
+/* ===========================================
+   Chatbot IT - Custom Styles
+   Compatible avec Bootstrap 5.3 dark mode
+   =========================================== */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Light theme background */
+[data-bs-theme="light"] body {
+    background: #f4f6f9;
+}
+
+/* Dark theme background */
+[data-bs-theme="dark"] body {
+    background: #1a1d20;
+}
+
+/* ----- Chat ----- */
+.chat-card {
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-body {
+    overflow-y: auto;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+[data-bs-theme="light"] .chat-body {
+    background: linear-gradient(to bottom, #fafbfd, #ffffff);
+}
+
+[data-bs-theme="dark"] .chat-body {
+    background: linear-gradient(to bottom, #212529, #2b3035);
+}
+
+.chat-msg {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    max-width: 85%;
+}
+
+.chat-msg.user {
+    margin-left: auto;
+    align-items: flex-end;
+}
+
+.chat-msg.bot {
+    margin-right: auto;
+    align-items: flex-start;
+}
+
+.msg-bubble {
+    padding: 0.7rem 1rem;
+    border-radius: 1.1rem;
+    line-height: 1.45;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.msg-bubble.user {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: #fff;
+    border-bottom-right-radius: 0.3rem;
+}
+
+[data-bs-theme="light"] .msg-bubble.bot {
+    background: #e9ecef;
+    color: #212529;
+    border-bottom-left-radius: 0.3rem;
+}
+
+[data-bs-theme="dark"] .msg-bubble.bot {
+    background: #343a40;
+    color: #f8f9fa;
+    border-bottom-left-radius: 0.3rem;
+}
+
+.msg-time {
+    font-size: 0.72rem;
+    margin-top: 0.2rem;
+    padding: 0 0.5rem;
+}
+
+/* ----- Markdown content inside bubble ----- */
+.markdown-content p:last-child { margin-bottom: 0; }
+.markdown-content pre {
+    background: rgba(0,0,0,0.04);
+    border-radius: 0.4rem;
+    padding: 0.6rem;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+}
+
+[data-bs-theme="dark"] .markdown-content pre {
+    background: rgba(255,255,255,0.05);
+}
+
+.markdown-content code {
+    font-size: 0.875em;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+    background: rgba(0,0,0,0.06);
+}
+
+[data-bs-theme="dark"] .markdown-content code {
+    background: rgba(255,255,255,0.08);
+}
+
+.markdown-content pre code {
+    background: transparent;
+    padding: 0;
+}
+
+.markdown-content ul, .markdown-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.markdown-content blockquote {
+    border-left: 3px solid #0d6efd;
+    padding-left: 0.8rem;
+    color: inherit;
+    opacity: 0.85;
+    margin: 0.5rem 0;
+}
+
+/* ----- Suggestions ----- */
+.suggestions-block {
+    margin: 0.5rem 0 1.5rem;
+    padding: 0.75rem;
+    border-radius: 0.6rem;
+}
+
+[data-bs-theme="light"] .suggestions-block {
+    background: rgba(13,110,253,0.05);
+    border: 1px dashed rgba(13,110,253,0.2);
+}
+
+[data-bs-theme="dark"] .suggestions-block {
+    background: rgba(13,110,253,0.1);
+    border: 1px dashed rgba(13,110,253,0.3);
+}
+
+.suggestion-btn {
+    border-radius: 1.2rem;
+    font-size: 0.875rem;
+    transition: transform 0.15s;
+}
+
+.suggestion-btn:hover { transform: translateY(-1px); }
+
+/* ----- Feedback ----- */
+.feedback-buttons .feedback-btn {
+    text-decoration: none;
+    font-size: 1.05rem;
+    line-height: 1;
+    opacity: 0.55;
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.feedback-buttons .feedback-btn:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.feedback-buttons .feedback-btn.active { opacity: 1; }
+
+/* ----- Scrollbar ----- */
+.chat-body::-webkit-scrollbar { width: 8px; }
+.chat-body::-webkit-scrollbar-track { background: transparent; }
+.chat-body::-webkit-scrollbar-thumb {
+    background: #c9d1d9;
+    border-radius: 4px;
+}
+
+[data-bs-theme="dark"] .chat-body::-webkit-scrollbar-thumb {
+    background: #495057;
+}
+
+/* ----- Form ----- */
+#chat-input {
+    resize: none;
+    min-height: 44px;
+    max-height: 120px;
+}
+
+/* ----- Cards ----- */
+.card { border: none; border-radius: 0.6rem; }
+
+.navbar-brand i { margin-right: 0.3rem; }
+
+/* ----- Tables ----- */
+.table th { font-weight: 600; font-size: 0.9rem; }
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+    .chat-card { height: 82vh; }
+    .chat-msg { max-width: 92%; }
+}

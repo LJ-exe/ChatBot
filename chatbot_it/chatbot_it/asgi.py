@@ -1,0 +1,6 @@
+"""Configuration ASGI pour le projet chatbot_it."""
+import os
+from django.core.asgi import get_asgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chatbot_it.settings')
+application = get_asgi_application()

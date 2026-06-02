@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Modifier {{ user_obj.username }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2><i class="bi bi-pencil-square"></i> Modifier {{ user_obj.username }}</h2>
+                <hr>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3 {% if field.field.widget.input_type == 'checkbox' %}form-check{% endif %}">
+                            {% if field.field.widget.input_type == 'checkbox' %}
+                                {{ field }}
+                                <label class="form-check-label">{{ field.label }}</label>
+                            {% else %}
+                                <label class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors|join:", " }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Enregistrer
+                    </button>
+                    <a href="{% url 'chat:admin_users_list' %}" class="btn btn-outline-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

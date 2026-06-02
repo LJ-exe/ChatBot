@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Historique - {{ user_obj.username }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-clock-history"></i> Historique de {{ user_obj.username }}</h2>
+    <a href="{% url 'chat:admin_users_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Retour
+    </a>
+</div>
+
+<div class="card mb-3 bg-light">
+    <div class="card-body">
+        <strong>{{ user_obj.full_name }}</strong> — {{ user_obj.email }}<br>
+        Inscrit le {{ user_obj.date_joined|date:"d/m/Y" }}
+    </div>
+</div>
+
+{% if page_obj.object_list %}
+    {% for msg in page_obj %}
+        <div class="card mb-2 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center py-2">
+                <small><i class="bi bi-calendar"></i> {{ msg.date|date:"d/m/Y H:i" }}</small>
+                <span class="badge bg-{% if msg.source == 'FAQ' %}info{% elif msg.source == 'OPENAI' %}success{% else %}danger{% endif %}">
+                    {{ msg.get_source_display }}
+                </span>
+            </div>
+            <div class="card-body py-2">
+                <p class="mb-1"><strong>Q :</strong> {{ msg.question|linebreaksbr }}</p>
+                <p class="mb-0 text-muted"><strong>R :</strong> {{ msg.response|linebreaksbr }}</p>
+            </div>
+        </div>
+    {% endfor %}
+    {% include 'partials/pagination.html' %}
+{% else %}
+    <div class="alert alert-info">Cet utilisateur n'a pas encore de messages.</div>
+{% endif %}
+{% endblock %}

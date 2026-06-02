@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer FAQ{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-danger">
+            <div class="card-body p-4">
+                <h3 class="text-danger"><i class="bi bi-exclamation-triangle"></i> Supprimer cette FAQ ?</h3>
+                <hr>
+                <p><strong>Question :</strong> {{ faq.question }}</p>
+                <p><strong>Réponse :</strong> {{ faq.response|truncatechars:200 }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </button>
+                    <a href="{% url 'chat:admin_faq_list' %}" class="btn btn-outline-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
