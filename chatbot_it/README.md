@@ -1,23 +1,21 @@
-# 🤖 Chatbot IT — Application Django Complète (v2)
+# 🤖 Chatbot IT — Application Django Complète 
 
 Application web Django d'un chatbot spécialisé en informatique (IT), avec :
-- 👤 Espace utilisateur (inscription, chat, historique, feedback)
-- 👑 Panneau admin (gestion utilisateurs, FAQ, conversations, statistiques)
-- 🧠 Intégration **OpenAI / ChatGPT** comme fallback quand aucune FAQ ne correspond
-- 💾 Modèles basés sur le diagramme de classes fourni (User, Admin, FAQ, Message, Conv_History)
+-  Espace utilisateur (inscription, chat, historique, feedback)
+-  Panneau admin (gestion utilisateurs, FAQ, conversations, statistiques)
+-  Intégration **OpenAI / ChatGPT** comme fallback quand aucune FAQ ne correspond
+-  Modèles basés sur le diagramme de classes fourni (User, Admin, FAQ, Message, Conv_History)
 
 ---
 
-## ✨ Améliorations v2
+##  Améliorations 
 
-Cette version inclut **6 améliorations majeures** par rapport à la v1 :
-
-1. 🧠 **Mémoire conversationnelle** — Le bot se souvient des 5 derniers échanges et peut comprendre des questions de suivi (« Et c'est différent d'IPv6 ? »).
-2. ✨ **Rendu Markdown + coloration syntaxique** — Les blocs de code dans les réponses sont mis en forme avec `highlight.js`, les listes/gras/tableaux rendus proprement avec `marked.js`.
-3. 🛡️ **Rate limiting** — Maximum 30 messages/heure par utilisateur (anti-abus, protège votre budget OpenAI).
-4. 👍👎 **Système de feedback** — Les utilisateurs notent chaque réponse. Les admins voient les réponses ChatGPT mal notées et peuvent les **convertir en FAQ d'un clic**.
-5. 💡 **Suggestions de questions rapides** — Les nouveaux utilisateurs voient 4 questions cliquables basées sur les FAQ les plus populaires.
-6. 🌙 **Mode sombre** — Toggle dans la navbar, persisté en `localStorage`, compatible Bootstrap 5.3 + highlight.js.
+ 
+1. **Mémoire conversationnelle** — Le bot se souvient des 5 derniers échanges et peut comprendre des questions de suivi .
+2. **Rate limiting** — Maximum 30 messages/heure par utilisateur (anti-abus, protège votre budget OpenAI).
+3. **Système de feedback** — Les utilisateurs notent chaque réponse. Les admins voient les réponses ChatGPT mal notées et peuvent les **convertir en FAQ d'un clic**.
+4.  **Suggestions de questions rapides** — Les nouveaux utilisateurs voient 4 questions cliquables basées sur les FAQ les plus populaires.
+5.  **Mode sombre** — Toggle dans la navbar, persisté en `localStorage`, compatible Bootstrap 5.3 + highlight.js.
 
 ---
 
