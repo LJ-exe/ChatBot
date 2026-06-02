@@ -12,11 +12,10 @@ Application web Django d'un chatbot spécialisé en informatique (IT), avec :
 
 
 1. 🧠 **Mémoire conversationnelle** — Le bot se souvient des 5 derniers échanges et peut comprendre des questions de suivi (« Et c'est différent d'IPv6 ? »).
-2. ✨ **Rendu Markdown + coloration syntaxique** — Les blocs de code dans les réponses sont mis en forme avec `highlight.js`, les listes/gras/tableaux rendus proprement avec `marked.js`.
-3. 🛡️ **Rate limiting** — Maximum 30 messages/heure par utilisateur (anti-abus, protège votre budget OpenAI).
-4. 👍👎 **Système de feedback** — Les utilisateurs notent chaque réponse. Les admins voient les réponses ChatGPT mal notées et peuvent les **convertir en FAQ d'un clic**.
-5. 💡 **Suggestions de questions rapides** — Les nouveaux utilisateurs voient 4 questions cliquables basées sur les FAQ les plus populaires.
-6. 🌙 **Mode sombre** — Toggle dans la navbar, persisté en `localStorage`, compatible Bootstrap 5.3 + highlight.js.
+2. 🛡️ **Rate limiting** — Maximum 30 messages/heure par utilisateur (anti-abus, protège votre budget OpenAI).
+3. 👍👎 **Système de feedback** — Les utilisateurs notent chaque réponse. Les admins voient les réponses ChatGPT mal notées et peuvent les **convertir en FAQ d'un clic**.
+4. 💡 **Suggestions de questions rapides** — Les nouveaux utilisateurs voient 4 questions cliquables basées sur les FAQ les plus populaires.
+5. 🌙 **Mode sombre** — Toggle dans la navbar, persisté en `localStorage`, compatible Bootstrap 5.3 + highlight.js.
 
 ---
 
